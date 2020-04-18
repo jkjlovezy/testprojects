@@ -1,5 +1,7 @@
-package com.jkj.test.transaction.defaults;
+package com.test.service;
 
+import com.test.dao.GoodsDao;
+import com.test.entity.Goods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

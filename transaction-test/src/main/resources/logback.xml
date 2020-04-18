@@ -11,6 +11,7 @@
 
     <!-- 控制java下面包的打印,没设置等级,将继承上级root的等级 -->
     <logger name="org.springframework" level="warn"></logger>
+    <logger name="org.springframework" level="warn"></logger>
     <logger name="org.hibernate" level="warn"></logger>
     <logger name="com.jkj" level="info"></logger>
     <root level="warn">

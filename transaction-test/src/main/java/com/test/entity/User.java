@@ -1,4 +1,4 @@
-package com.jkj.test.transaction.defaults;
+package com.test.entity;
 
 
 import javax.persistence.Column;

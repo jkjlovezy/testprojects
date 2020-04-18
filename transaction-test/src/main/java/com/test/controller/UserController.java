@@ -1,5 +1,7 @@
-package com.jkj.test.transaction.defaults;
+package com.test.controller;
 
+import com.test.dao.UserDao;
+import com.test.entity.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

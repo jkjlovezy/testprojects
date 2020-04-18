@@ -1,9 +1,11 @@
-package com.jkj.test.transaction.defaults;
+package com.test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.core.Ordered;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -16,9 +18,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @SpringBootApplication
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
-public class DefaultsApplication {
+public class TransactionTestApplication {
     public static void main(String[] args) {
-        new SpringApplication(DefaultsApplication.class).run();
+        new SpringApplication(TransactionTestApplication.class).run();
     }
 
     @Bean

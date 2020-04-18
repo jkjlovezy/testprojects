@@ -1,7 +1,10 @@
-package com.jkj.test.transaction.defaults;
+package com.test.service;
 
+import com.test.dao.GoodsDao;
+import com.test.dao.UserDao;
+import com.test.entity.Goods;
+import com.test.entity.User;
 import org.springframework.aop.framework.AopContext;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,35 +21,31 @@ public class UserService {
     @Autowired
     private UserService userService;
 
-    public void save() {
+    public void nonTrans() {
         userDao.save(buildUser());
         int i = 1 / 0;
         goodsDao.save(buildGoods());
     }
 
     @Transactional
-    public void save2() {
+    public void withTrans() {
         userDao.save(buildUser());
         int i = 1 / 0;
         goodsDao.save(buildGoods());
     }
 
-    public void save3() {
-        save2();
+    public void invokeSelfTrans() {
+        withTrans();
     }
 
-    public void save4() {
-        ((UserService) AopContext.currentProxy()).save2();
+    public void invokeSelfTransByAopContext() {
+        ((UserService) AopContext.currentProxy()).withTrans();
     }
 
-    public void save5() {
-        userService.save2();
+    public void invokeSelfTransByAutowired() {
+        userService.withTrans();
     }
 
-    @Transactional
-    public void save6() {
-        save2();
-    }
 
     private User buildUser() {
         User user = new User("jkj", "1234");
