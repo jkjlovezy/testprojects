@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+<!--            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } -&#45;&#45; [%15.15t] %-40.40logger{39}[Line:%L] : %m%n</pattern>-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %logger{39}[Line:%L] : %m%n</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 控制java下面包的打印,没设置等级,将继承上级root的等级 -->
+    <logger name="org.springframework" level="warn"></logger>
+    <logger name="org.hibernate" level="warn"></logger>
+    <logger name="com.jkj" level="info"></logger>
+    <root level="warn">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
