@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(locations = {"classpath:aspect-out-trans.properties"}, inheritProperties = false)
+@TestPropertySource(locations = {"classpath:aspect-out-trans.properties"}, inheritLocations = false)
 @Slf4j
 public class AspectOutTransTest extends BaseTest {
     @Autowired

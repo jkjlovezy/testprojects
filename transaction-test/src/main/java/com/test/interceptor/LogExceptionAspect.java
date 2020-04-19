@@ -28,12 +28,12 @@ public class LogExceptionAspect {
     @Around("exceptionPointCut()")
     public Object aroundServiceMethod(ProceedingJoinPoint pjr) throws Throwable {
         try {
-//            log.info("OutTransAspect around before");
+            log.info("OutTransAspect around before");
             return pjr.proceed();
         } catch (Exception e) {
             log.error("LogExceptionAspect throws exception: {}", e.getMessage());
         } finally {
-//            log.info("OutTransAspect around after");
+            log.info("OutTransAspect around after");
         }
         return null;
     }
