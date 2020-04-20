@@ -17,4 +17,4 @@ create table goods
     primary key (id)
 );
 
-insert into user(username, password) values ( 'jkj','1234' );
+-- insert into user(username, password) values ( 'jkj','1234' );
