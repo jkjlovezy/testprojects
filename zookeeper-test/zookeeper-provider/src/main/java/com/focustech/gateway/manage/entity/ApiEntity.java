@@ -2,8 +2,12 @@ package com.focustech.gateway.manage.entity;
 
 import lombok.Data;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -11,8 +15,8 @@ import javax.persistence.Table;
 @Data
 public class ApiEntity extends BaseEntity {
 
-    @Column(name = "service_id")
-    private Integer serviceId;
+//    @Column(name = "service_id")
+//    private Integer serviceId;
 
     @Column(name = "api_path")
     private String apiPath;
@@ -38,5 +42,7 @@ public class ApiEntity extends BaseEntity {
     @Column(name = "flowlimit_enable")
     private Integer flowlimitEnable;// tinyint not null default 0 comment '流控开关，0-关闭、1-打开',
 
-
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = ServiceEntity.class)
+    @JoinColumn(name = "service_id", referencedColumnName = "id")
+    private ServiceEntity service;
 }

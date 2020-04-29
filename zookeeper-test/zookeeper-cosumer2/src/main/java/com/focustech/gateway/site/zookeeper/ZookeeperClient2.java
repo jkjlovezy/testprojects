@@ -8,6 +8,7 @@ import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.Charset;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-//@Component
+@Component
 @Slf4j
 public class ZookeeperClient2 {
     @Value("${zookeeper.url}")
@@ -38,20 +39,6 @@ public class ZookeeperClient2 {
         })).ifPresent(s -> s.forEach(System.out::println));
     }
 
-    @PostConstruct
-    public void initZk() {
-        try {
-//            zkClient = new ZkClient(zkHostPort, 30000, 30000, new SerializableSerializer());
-            zkClient = new ZkClient(zkHostPort, 30000, 30000, zkSerializer);
-            if (!zkClient.exists(zkRootPath)) {
-                zkClient.createPersistent(zkRootPath, true);
-            }
-            recursiveWatch(zkRootPath);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     static ZkSerializer zkSerializer = new ZkSerializer() {
         public Object deserialize(byte[] bytes) throws ZkMarshallingError {
             return new String(bytes, Charset.forName("UTF-8"));
@@ -62,14 +49,29 @@ public class ZookeeperClient2 {
         }
     };
 
+    @PostConstruct
+    public void initZk() {
+        try {
+//            zkClient = new ZkClient(zkHostPort, 30000, 30000, new SerializableSerializer());
+            zkClient = new ZkClient(zkHostPort, 30000, 30000, zkSerializer);
+            if (!zkClient.exists(zkRootPath)) {
+                zkClient.createPersistent(zkRootPath, true);
+            }
+            recursiveWatch(zkRootPath);
+        } catch (Exception e) {
+            log.error("init zkClient error: ", e);
+        }
+    }
+
     private void recursiveWatch(String nodePath) {
-        Optional.ofNullable(startWatch(nodePath)).ifPresent(list -> list.forEach(s -> recursiveWatch(nodePath+"/"+s)));
+        Optional.ofNullable(startWatch(nodePath)).ifPresent(list -> list.forEach(s -> recursiveWatch(nodePath + "/" + s)));
     }
 
     private List<String> startWatch(String nodePath) {
         log.info("start watch nodePath: {}", nodePath);
+        List<String> childNames = zkClient.subscribeChildChanges(nodePath, childListener);
         zkClient.subscribeDataChanges(nodePath, dataListener);
-        return zkClient.subscribeChildChanges(nodePath, childListener);
+        return childNames;
     }
 
     IZkChildListener childListener = new IZkChildListener() {

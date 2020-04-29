@@ -1,10 +1,9 @@
 package com.focustech.gateway.manage.zookeeper;
 
-import com.alibaba.fastjson.JSON;
 import com.focustech.gateway.manage.entity.ApiEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
-import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.WatchedEvent;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.nio.charset.Charset;
 
+@Slf4j
 @Component
 public class ZookeeperClient implements Watcher {
     @Value("${zookeeper.url}")
@@ -28,34 +28,27 @@ public class ZookeeperClient implements Watcher {
     @PostConstruct
     public void initZk() {
         try {
-//            zkClient = new ZkClient(zkHostPort, 30000,30000, new SerializableSerializer());
-            zkClient = new ZkClient(zkHostPort, 30000, 30000, new ZkSerializer(){
-                public Object deserialize(byte[] bytes) throws ZkMarshallingError
-                {
-                    return new String(bytes, Charset.forName("UTF-8"));
-                }
-
-                public byte[] serialize(Object obj) throws ZkMarshallingError
-                {
-                    return String.valueOf(obj).getBytes(Charset.forName("UTF-8"));
-                }
-            });
+            zkClient = new ZkClient(zkHostPort, 15000, 10000, zkSerializer);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("init zkClient error:", e);
         }
     }
 
-    public static void main(String[] args) {
-        SerializableSerializer serializer = new SerializableSerializer();
-        ;
-        System.out.println(serializer.deserialize(serializer.serialize("jkj")) );
-    }
+    static ZkSerializer zkSerializer = new ZkSerializer() {
+        public Object deserialize(byte[] bytes) throws ZkMarshallingError {
+            return new String(bytes, Charset.forName("UTF-8"));
+        }
 
-    public void addApi(ApiEntity apiEntity, AsyncCallback.StringCallback createApiCallback) throws Exception {
+        public byte[] serialize(Object obj) throws ZkMarshallingError {
+            return String.valueOf(obj).getBytes(Charset.forName("UTF-8"));
+        }
+    };
+
+
+    public void addNode(String nodePath, String data, AsyncCallback.StringCallback createApiCallback) throws Exception {
         if (!zkClient.exists(zkRootPath))
             zkClient.createPersistent(zkRootPath, true);
-        String nodePath = zkRootPath + "/" + apiEntity.getId();
-        zkClient.createPersistent(nodePath, JSON.toJSONString(apiEntity), ZooDefs.Ids.OPEN_ACL_UNSAFE);
+        zkClient.createPersistent(zkRootPath + "/" + nodePath, data, ZooDefs.Ids.OPEN_ACL_UNSAFE);
     }
 
 

@@ -1,5 +1,6 @@
 package com.focustech.gateway.manage.service;
 
+import com.alibaba.fastjson.JSON;
 import com.focustech.gateway.manage.entity.ApiEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.AsyncCallback.StringCallback;
@@ -22,7 +23,7 @@ public class ApiService {
     public void addApi(ApiPostRequest request) {
         ApiEntity apiEntity = apiDao.save(request.convertToEntity());
         try {
-            zookeeperClient.addApi(apiEntity, createApiCallback);
+            zookeeperClient.addNode(apiEntity.getId().toString(), JSON.toJSONString(apiEntity), createApiCallback);
         } catch (Exception e) {
             log.error("ApiService.addApi exception:", e);
             rollbackAddedApi(apiEntity);

@@ -16,6 +16,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
 zookeeper:
   url: 127.0.0.1:2181
-  rootpath: /gateway
+  rootpath: /gateway/api
