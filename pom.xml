@@ -17,6 +17,7 @@
     <modules>
         <module>reflect-test</module>
         <module>transaction-test</module>
+        <module>zookeeper-test</module>
     </modules>
 
     <parent>

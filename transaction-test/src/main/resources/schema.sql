@@ -6,6 +6,7 @@ create table user
     id       int not null auto_increment comment '主键',
     username varchar(100) comment '',
     password varchar(100) comment '',
+    status varchar(20) comment '',
     primary key (id)
 );
 

@@ -1,13 +1,19 @@
 package com.test.entity;
 
 
+import com.test.constants.UserStatusEnum;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
+@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +25,10 @@ public class User {
     @Column
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="status")
+    private UserStatusEnum status;
+
     public User() {
     }
 
@@ -27,29 +37,12 @@ public class User {
         this.password = password;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setUsername(String username) {
+    public User(String username, String password, UserStatusEnum status) {
         this.username = username;
+        this.password = password;
+        this.status = status;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     @Override
     public String toString() {
