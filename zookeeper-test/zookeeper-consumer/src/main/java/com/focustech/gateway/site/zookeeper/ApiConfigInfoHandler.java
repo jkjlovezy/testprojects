@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Component
 public class ApiConfigInfoHandler {
-    private ConcurrentLinkedQueue<ApiZkNodeData> queue = new ConcurrentLinkedQueue<ApiZkNodeData>();
+    private ConcurrentLinkedQueue<ApiConfigEvent> queue = new ConcurrentLinkedQueue<ApiConfigEvent>();
     private AtomicBoolean isHandling = new AtomicBoolean(false);
 
     @PostConstruct
@@ -19,31 +19,32 @@ public class ApiConfigInfoHandler {
     }
 
     public void handle(ApiConfigEvent configEvent) {
-        switch (configEvent.getType()) {
-            case ADDED:
-                offer(configEvent.getData());
-                if (isHandling.compareAndSet(false, true)) {
-                    new ProcessThread().run();
-                }
-                break;
-            case UPDATED:
-                break;
-            case REMOVED:
-                break;
-            default:
+        offer(configEvent);
+        if (isHandling.compareAndSet(false, true)) {
+            new ProcessThread().run();
         }
+
     }
 
     public class ProcessThread implements Runnable {
         @Override
         public void run() {
-            ApiZkNodeData apiInfo = null;
+            ApiConfigEvent configEvent = null;
             try {
                 while (true) {
-                    if ((apiInfo = queue.poll()) == null) {
+                    if ((configEvent = queue.poll()) == null) {
                         break;
                     }
-                    log.info("trigger route config for the new apiInfo={}",apiInfo);
+                    log.info("reset route info: ApiConfigEvent={}", configEvent);
+                    switch (configEvent.getType()) {
+                        case ADDED:
+                            break;
+                        case UPDATED:
+                            break;
+                        case REMOVED:
+                            break;
+                        default:
+                    }
                 }
             } catch (Exception e) {
                 log.error("process error", e);
@@ -54,10 +55,10 @@ public class ApiConfigInfoHandler {
     }
 
 
-    private void offer(ApiZkNodeData nodeData) {
+    private void offer(ApiConfigEvent nodeData) {
         try {
             if (!queue.offer(nodeData))
-                log.error("process apiZkNodeData fail because of queue is full. apiZkNodeData = {}", nodeData);
+                log.error("process ZkApiNodeData fail because of queue is full. ZkApiNodeData = {}", nodeData);
         } catch (Exception e) {
             log.error("offer error", e);
         }
