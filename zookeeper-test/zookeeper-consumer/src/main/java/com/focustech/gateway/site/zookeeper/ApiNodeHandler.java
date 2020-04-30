@@ -3,25 +3,20 @@ package com.focustech.gateway.site.zookeeper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
-public class ApiConfigInfoHandler {
+public class ApiNodeHandler {
+
     private ConcurrentLinkedQueue<ApiConfigEvent> queue = new ConcurrentLinkedQueue<ApiConfigEvent>();
     private AtomicBoolean isHandling = new AtomicBoolean(false);
-
-    @PostConstruct
-    public void init() {
-
-    }
 
     public void handle(ApiConfigEvent configEvent) {
         offer(configEvent);
         if (isHandling.compareAndSet(false, true)) {
-            new ProcessThread().run();
+            new ApiNodeHandler.ProcessThread().run();
         }
 
     }
@@ -29,7 +24,7 @@ public class ApiConfigInfoHandler {
     public class ProcessThread implements Runnable {
         @Override
         public void run() {
-            ApiConfigEvent configEvent = null;
+            ApiConfigEvent configEvent;
             try {
                 while (true) {
                     if ((configEvent = queue.poll()) == null) {
@@ -63,4 +58,5 @@ public class ApiConfigInfoHandler {
             log.error("offer error", e);
         }
     }
+
 }
