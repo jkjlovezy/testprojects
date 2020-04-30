@@ -2,11 +2,12 @@ package com.focustech.gateway.site.zookeeper;
 
 import lombok.Data;
 import lombok.ToString;
+import com.focustech.gateway.site.zookeeper.ZookeeperClient.Operation;
 
 @Data
 @ToString
 public class ApiConfigEvent {
-    private final ApiConfigEvent.Type type;
+    private final Operation type;
     private final String path;
     private final ZkApiNodeData data;
 

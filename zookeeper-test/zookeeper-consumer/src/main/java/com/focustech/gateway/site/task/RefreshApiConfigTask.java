@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Slf4j
 @Component
 public class RefreshApiConfigTask {
@@ -22,10 +20,10 @@ public class RefreshApiConfigTask {
     public void refreshNodes() {
         log.info("--refresh nodes, start");
         try {
-            List<String> allNodePathList = zookeeperClient.getAllNode();
-            log.info("--refresh nodes, all path: ");
-            allNodePathList.forEach((path) -> log.info("--refresh nodes, path={}", path));
-            apiConfigHolder.compareAndRemoveApi(allNodePathList);
+//            List<String> allNodePathList = zookeeperClient.getAllNode();
+//            log.info("--refresh nodes, all path: ");
+//            allNodePathList.forEach((path) -> log.info("--refresh nodes, path={}", path));
+//            apiConfigHolder.compareAndRemoveApi(allNodePathList);
         } catch (Exception e) {
             log.info("--refresh nodes,  error:", e);
         }
