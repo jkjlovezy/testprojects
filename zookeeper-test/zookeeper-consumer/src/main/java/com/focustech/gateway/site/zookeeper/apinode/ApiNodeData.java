@@ -1,5 +1,6 @@
-package com.focustech.gateway.site.zookeeper;
+package com.focustech.gateway.site.zookeeper.apinode;
 
+import com.focustech.gateway.site.zookeeper.core.NodeData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class ZkApiNodeData {
+public class ApiNodeData extends NodeData {
     private String serviceDomain;
     private String servicePath;
     private Integer requestTimeout;

@@ -1,7 +1,7 @@
 package com.focustech.gateway.site.task;
 
-import com.focustech.gateway.site.zookeeper.ApiConfigHolder;
-import com.focustech.gateway.site.zookeeper.ZookeeperClient;
+import com.focustech.gateway.site.zookeeper.apinode.ApiNodeProcessor;
+import com.focustech.gateway.site.zookeeper.core.ZookeeperClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,7 +14,7 @@ public class RefreshApiConfigTask {
     ZookeeperClient zookeeperClient;
 
     @Autowired
-    ApiConfigHolder apiConfigHolder;
+    ApiNodeProcessor apiNodeProcessor;
 
     @Scheduled(cron = "0/15 * * * * ?")
     public void refreshNodes() {

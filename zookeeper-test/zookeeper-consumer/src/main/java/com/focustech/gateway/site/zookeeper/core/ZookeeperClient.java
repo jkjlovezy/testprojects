@@ -1,31 +1,25 @@
-package com.focustech.gateway.site.zookeeper;
+package com.focustech.gateway.site.zookeeper.core;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
-@Component
 @Slf4j
 public class ZookeeperClient {
     private CuratorFramework curator;
 
-    @Value("${zookeeper.url}")
     private String zkHostPort;
-    @Value("${zookeeper.rootpath:/gateway}")
-    private String zkRootPath;
 
-    @PostConstruct
-    public void initZk() {
+    public ZookeeperClient(String zkHostPort) {
+        this.zkHostPort = zkHostPort;
+        init();
+    }
+
+    private void init() {
         try {
             RetryPolicy policy = new ExponentialBackoffRetry(1000, 10);
             curator = CuratorFrameworkFactory.builder().connectString(zkHostPort).sessionTimeoutMs(15000)
@@ -37,7 +31,7 @@ public class ZookeeperClient {
         }
     }
 
-    public void register(String rootPath, TreeCacheListener treeCacheListener) throws Exception {
+    public void registerListener(String rootPath, TreeCacheListener treeCacheListener) throws Exception {
         TreeCache treeCache = new TreeCache(curator, rootPath);
         treeCache.start();
         treeCache.getListenable().addListener(treeCacheListener);
@@ -72,36 +66,5 @@ public class ZookeeperClient {
 //
 //    }
 
-    public static abstract class AbstractTreeCacheListener implements TreeCacheListener {
 
-        @Override
-        public void childEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent){
-            ChildData childData = treeCacheEvent.getData();
-            if (childData == null) {
-                log.info("treeCacheEvent.getData is null, treeCacheEvent = {}", treeCacheEvent);
-                return;
-            }
-
-            switch (treeCacheEvent.getType()) {
-                case NODE_ADDED:
-                    handleEvent(childData.getPath(), childData.getData(), childData.getStat().getVersion(), Operation.ADDED);
-                    break;
-                case NODE_UPDATED:
-                    handleEvent(childData.getPath(), childData.getData(), childData.getStat().getVersion(), Operation.UPDATED);
-                    break;
-                case NODE_REMOVED:
-                    handleEvent(childData.getPath(), childData.getData(), childData.getStat().getVersion(), Operation.REMOVED);
-                    break;
-                default:
-                    log.info("other event, type={}", treeCacheEvent.getType());
-                    break;
-            }
-        }
-
-        abstract void handleEvent(String path, byte[] data, int dataVersion, Operation operation);
-    }
-
-
-
-    public enum Operation {ADDED, UPDATED, REMOVED}
 }
