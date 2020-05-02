@@ -1,4 +1,4 @@
-package com.focustech.gateway.site.zookeeper.apinode;
+package com.focustech.gateway.site.zookeeper.servicenode;
 
 import com.focustech.gateway.site.zookeeper.core.AbstractNodeHandler;
 import com.focustech.gateway.site.zookeeper.core.NodeEvent;
@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class ApiNodeHandler extends AbstractNodeHandler<ApiNodeData> implements NodeHandler {
+public class ServiceNodeHandler extends AbstractNodeHandler<ServiceNodeData> implements NodeHandler {
 
     @Override
-    public void doHandle(NodeEvent<ApiNodeData> nodeEvent) {
-        log.debug("ApiNodeHandler receive nodeEvent,nodeEvent={}", nodeEvent);
+    public void doHandle(NodeEvent<ServiceNodeData> nodeEvent) {
+        log.debug("ServiceNodeHandler receive nodeEvent,nodeEvent={}", nodeEvent);
         switch (nodeEvent.getOperation()) {
             case ADDED:
                 break;

@@ -20,9 +20,13 @@ public class BaseTreeCacheListener<Handler extends NodeHandler, Data extends Nod
         this.nodeHandler = nodeHandler;
     }
 
-    private Class getEntityClass() {
+    protected Class getNodeDataClass() {
         Type t = this.getClass().getGenericSuperclass();
-        return (Class) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+        if (ParameterizedType.class.isAssignableFrom(t.getClass())) {
+            return (Class) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+        } else {
+            throw new RuntimeException("the treeCacheListener lose the NodeData generic,please specify the NodeData Generic or override the method of getNodeDataClass");
+        }
     }
 
     @Override
@@ -34,22 +38,22 @@ public class BaseTreeCacheListener<Handler extends NodeHandler, Data extends Nod
             byte[] data = childData.getData();
             String path = childData.getPath();
             int dataVersion = childData.getStat().getVersion();
-            log.debug("receive node event: type={},path={},dataVersion={},data={}", treeCacheEvent.getType(), path, dataVersion, new String(data, Charset.forName("UTF-8")));
+            log.debug("treeCacheListener receive node event: type={},path={},dataVersion={},data={}", treeCacheEvent.getType(), path, dataVersion, new String(data, Charset.forName("UTF-8")));
             switch (treeCacheEvent.getType()) {
                 case NODE_ADDED:
                     if (data != null && data.length > 0) {
-                        NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.ADDED, path, dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getEntityClass()));
+                        NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.ADDED, path, dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getNodeDataClass()));
                         addNode(nodeEvent);
                     }
                     break;
                 case NODE_UPDATED:
                     if (data != null && data.length > 0) {
-                        NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.UPDATED, path, dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getEntityClass()));
+                        NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.UPDATED, path, dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getNodeDataClass()));
                         updateNode(nodeEvent);
                     }
                     break;
                 case NODE_REMOVED:
-                    NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.REMOVED, path, dataVersion, null);
+                    NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.DELETED, path, dataVersion, null);
                     removeNode(nodeEvent);
                     break;
                 default:

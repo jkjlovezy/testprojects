@@ -4,6 +4,8 @@ import com.focustech.gateway.site.zookeeper.apinode.ApiNodeHandler;
 import com.focustech.gateway.site.zookeeper.apinode.ApiNodeTreeCacheListener;
 import com.focustech.gateway.site.zookeeper.core.BaseTreeCacheListener;
 import com.focustech.gateway.site.zookeeper.core.ZookeeperClient;
+import com.focustech.gateway.site.zookeeper.servicenode.ServiceNodeData;
+import com.focustech.gateway.site.zookeeper.servicenode.ServiceNodeHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,17 @@ public class ZookeeperConfiguration {
         ApiNodeTreeCacheListener apiNodeListener = new ApiNodeTreeCacheListener
                 (apiNodeHandler);
         return apiNodeListener;
+    }
+
+    @Bean("serviceNodeListener")
+    public BaseTreeCacheListener serviceNodeListener(ServiceNodeHandler serviceNodeHandler) {
+        BaseTreeCacheListener serviceNodeListener = new BaseTreeCacheListener(serviceNodeHandler) {
+            @Override
+            protected Class getNodeDataClass() {
+                return ServiceNodeData.class;
+            }
+        };
+        return serviceNodeListener;
     }
 
 }

@@ -1,13 +1,12 @@
 package com.focustech.gateway.site.zookeeper.core;
 
-import com.focustech.gateway.site.zookeeper.apinode.ApiNodeData;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-public abstract class AbstractNodeHandler<T extends ApiNodeData> implements NodeHandler {
+public abstract class AbstractNodeHandler<T extends NodeData> implements NodeHandler {
 
     private ConcurrentLinkedQueue<NodeEvent<T>> queue = new ConcurrentLinkedQueue<NodeEvent<T>>();
     private AtomicBoolean isHandling = new AtomicBoolean(false);
