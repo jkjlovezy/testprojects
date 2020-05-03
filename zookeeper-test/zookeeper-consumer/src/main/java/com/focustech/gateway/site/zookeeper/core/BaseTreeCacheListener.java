@@ -14,10 +14,12 @@ import java.nio.charset.Charset;
 
 @Slf4j
 public class BaseTreeCacheListener<Handler extends NodeHandler, Data extends NodeData> implements TreeCacheListener {
-    protected NodeHandler nodeHandler;
+    private NodeHandler nodeHandler;
+    private String rootPath;
 
-    public BaseTreeCacheListener(Handler nodeHandler) {
+    public BaseTreeCacheListener(Handler nodeHandler, String rootPath) {
         this.nodeHandler = nodeHandler;
+        this.rootPath = rootPath;
     }
 
     protected Class getNodeDataClass() {
@@ -42,18 +44,18 @@ public class BaseTreeCacheListener<Handler extends NodeHandler, Data extends Nod
             switch (treeCacheEvent.getType()) {
                 case NODE_ADDED:
                     if (data != null && data.length > 0) {
-                        NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.ADDED, path, dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getNodeDataClass()));
+                        NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.ADDED, path.substring(rootPath.length()), dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getNodeDataClass()));
                         addNode(nodeEvent);
                     }
                     break;
                 case NODE_UPDATED:
                     if (data != null && data.length > 0) {
-                        NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.UPDATED, path, dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getNodeDataClass()));
+                        NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.UPDATED, path.substring(rootPath.length()), dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getNodeDataClass()));
                         updateNode(nodeEvent);
                     }
                     break;
                 case NODE_REMOVED:
-                    NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.DELETED, path, dataVersion, null);
+                    NodeEvent<Data> nodeEvent = (NodeEvent<Data>) NodeEvent.class.getConstructor(NodeOperationType.class, String.class, int.class, NodeData.class).newInstance(NodeOperationType.DELETED, path.substring(rootPath.length()), dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), getNodeDataClass()));
                     removeNode(nodeEvent);
                     break;
                 default:

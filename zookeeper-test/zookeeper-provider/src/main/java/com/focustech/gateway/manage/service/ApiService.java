@@ -31,7 +31,7 @@ public class ApiService {
     }
 
     private void rollbackAddedApi(ApiEntity apiEntity) {
-        apiDao.delete(apiEntity.getId());
+        apiDao.delete(apiEntity);
     }
 
     StringCallback createApiCallback = new StringCallback() {

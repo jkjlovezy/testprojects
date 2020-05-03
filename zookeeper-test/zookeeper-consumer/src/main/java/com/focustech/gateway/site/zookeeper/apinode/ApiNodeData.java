@@ -13,10 +13,12 @@ import lombok.ToString;
 @ToString
 @Builder
 public class ApiNodeData extends NodeData {
+    private String id;
     private String serviceDomain;
     private String servicePath;
     private Integer requestTimeout;
     private Integer authentStrategy;
     private Integer flowlimitEnable;
     private Integer ruleGroupId;
+
 }

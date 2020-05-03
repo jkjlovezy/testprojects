@@ -15,6 +15,12 @@ public class ZookeeperConfiguration {
     @Value("${zookeeper.url}")
     private String zkHostPort;
 
+    @Value("${zookeeper.api.path:/gateway/api}")
+    private String apiRootPath;
+
+    @Value("${zookeeper.api.path:/gateway/service}")
+    private String serviceRootPath;
+
     @Bean
     public ZookeeperClient zookeeperClient() {
         ZookeeperClient zookeeperClient = new ZookeeperClient(zkHostPort);
@@ -24,13 +30,13 @@ public class ZookeeperConfiguration {
     @Bean("apiNodeListener")
     public BaseTreeCacheListener apiNodeListener(ApiNodeHandler apiNodeHandler) {
         ApiNodeTreeCacheListener apiNodeListener = new ApiNodeTreeCacheListener
-                (apiNodeHandler);
+                (apiNodeHandler, apiRootPath);
         return apiNodeListener;
     }
 
     @Bean("serviceNodeListener")
     public BaseTreeCacheListener serviceNodeListener(ServiceNodeHandler serviceNodeHandler) {
-        BaseTreeCacheListener serviceNodeListener = new BaseTreeCacheListener(serviceNodeHandler) {
+        BaseTreeCacheListener serviceNodeListener = new BaseTreeCacheListener(serviceNodeHandler, serviceRootPath) {
             @Override
             protected Class getNodeDataClass() {
                 return ServiceNodeData.class;

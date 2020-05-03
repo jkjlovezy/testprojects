@@ -26,7 +26,7 @@ public class CuratorApiService {
     @Transactional
     public void addApi(ApiPostRequest request) throws Exception {
         ApiEntity apiEntity = request.convertToEntity();
-        ServiceEntity serviceEntity = serviceDao.findById(request.getServiceId());
+        ServiceEntity serviceEntity = serviceDao.findById(request.getServiceId().intValue());
         if (serviceEntity == null) {
             throw new RuntimeException("params is not valid");
         }
