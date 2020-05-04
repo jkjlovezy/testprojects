@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TestController {
+    @GetMapping("/")
+    public ResponseEntity<String> testRateLimit0(){
+        return ResponseEntity.ok("this is a root get request");
+    }
     @PostMapping("/test/testRateLimit")
     public ResponseEntity<String> testRateLimit(){
         return ResponseEntity.ok("this is a post request");

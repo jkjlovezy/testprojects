@@ -20,5 +20,6 @@ public class ApiNodeData extends NodeData {
     private Integer authentStrategy;
     private Integer flowlimitEnable;
     private Integer ruleGroupId;
+    private String routeType;
 
 }

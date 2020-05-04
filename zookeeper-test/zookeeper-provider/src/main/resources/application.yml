@@ -10,9 +10,12 @@ spring:
   application:
     name: gateway-admin
   datasource:
-    url: jdbc:mysql://192.168.50.76:3306/crov_gateway_test?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
-    username: test
-    password: test
+#    url: jdbc:mysql://192.168.50.76:3306/crov_gateway_test?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+#    username: test
+#    password: test
+    url: jdbc:mysql://127.0.0.1:3306/crov_gateway_test?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    username: root
+    password:
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
