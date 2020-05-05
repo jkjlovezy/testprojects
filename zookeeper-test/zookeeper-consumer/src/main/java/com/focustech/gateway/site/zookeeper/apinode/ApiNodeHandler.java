@@ -22,6 +22,8 @@ public class ApiNodeHandler extends AbstractNodeHandler<ApiNodeData> implements 
 
     @Autowired
     DynamicRouteService dynamicRouteService;
+    @Autowired
+    ApiHolder apiHolder;
 
     @Override
     public void doHandle(NodeEvent<ApiNodeData> nodeEvent) {
@@ -33,12 +35,15 @@ public class ApiNodeHandler extends AbstractNodeHandler<ApiNodeData> implements 
         switch (nodeEvent.getOperation()) {
             case ADDED:
                 dynamicRouteService.add(assembleRouteDefinition(nodeEvent));
+                apiHolder.add(nodeEvent);
                 break;
             case UPDATED:
                 dynamicRouteService.update(assembleRouteDefinition(nodeEvent));
+                apiHolder.update(nodeEvent);
                 break;
             case DELETED:
                 dynamicRouteService.delete(nodeEvent.getData().getId());
+                apiHolder.delete(nodeEvent);
                 break;
             default:
         }

@@ -4,7 +4,7 @@ import com.focustech.gateway.site.dynamicroute.CustomPathRoutePredicateFactory;
 import com.focustech.gateway.site.dynamicroute.CustomRuleGatewayFilterFactory;
 import com.focustech.gateway.site.zookeeper.apinode.ApiNodeHandler;
 import com.focustech.gateway.site.zookeeper.apinode.ApiNodeTreeCacheListener;
-import com.focustech.gateway.site.zookeeper.apinode.ApiRuleCheckProcessor;
+import com.focustech.gateway.site.zookeeper.apinode.ApiHolder;
 import com.focustech.gateway.site.zookeeper.core.BaseTreeCacheListener;
 import com.focustech.gateway.site.zookeeper.core.ZookeeperClient;
 import com.focustech.gateway.site.zookeeper.servicenode.ServiceNodeData;
@@ -49,7 +49,7 @@ public class ZookeeperConfiguration {
     }
 
     @Bean
-    public CustomRuleGatewayFilterFactory customRuleGatewayFilterFactory(ApiRuleCheckProcessor apiRuleCheckProcessor) {
+    public CustomRuleGatewayFilterFactory customRuleGatewayFilterFactory(ApiHolder apiRuleCheckProcessor) {
         return new CustomRuleGatewayFilterFactory(apiRuleCheckProcessor);
     }
 
