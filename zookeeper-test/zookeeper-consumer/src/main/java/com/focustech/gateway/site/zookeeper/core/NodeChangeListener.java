@@ -13,11 +13,11 @@ import java.nio.charset.Charset;
 
 
 @Slf4j
-public class BaseTreeCacheListener<Handler extends NodeHandler, Data extends NodeData> implements TreeCacheListener {
+public class NodeChangeListener<Handler extends NodeHandler, Data extends NodeData> implements TreeCacheListener {
     private NodeHandler nodeHandler;
     private String rootPath;
 
-    public BaseTreeCacheListener(Handler nodeHandler, String rootPath) {
+    public NodeChangeListener(Handler nodeHandler, String rootPath) {
         this.nodeHandler = nodeHandler;
         this.rootPath = rootPath;
     }

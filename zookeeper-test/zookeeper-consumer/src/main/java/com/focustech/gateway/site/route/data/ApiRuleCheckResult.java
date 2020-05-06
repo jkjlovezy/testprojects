@@ -1,4 +1,4 @@
-package com.focustech.gateway.site.zookeeper.apinode;
+package com.focustech.gateway.site.route.data;
 
 import lombok.Data;
 import lombok.ToString;

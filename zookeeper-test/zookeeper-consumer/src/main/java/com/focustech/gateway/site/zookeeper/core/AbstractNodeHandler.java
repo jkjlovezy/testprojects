@@ -11,6 +11,7 @@ public abstract class AbstractNodeHandler<T extends NodeData> implements NodeHan
     private ConcurrentLinkedQueue<NodeEvent<T>> queue = new ConcurrentLinkedQueue<NodeEvent<T>>();
     private AtomicBoolean isHandling = new AtomicBoolean(false);
 
+    @Override
     public void handle(NodeEvent nodeEvent) {
         offer(nodeEvent);
         if (isHandling.compareAndSet(false, true)) {

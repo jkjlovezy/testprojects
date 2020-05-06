@@ -1,8 +1,7 @@
-package com.focustech.gateway.site.dynamicroute;
+package com.focustech.gateway.site.route.filter;
 
-import com.focustech.gateway.site.zookeeper.apinode.ApiHolder;
-import com.focustech.gateway.site.zookeeper.apinode.ApiRule;
-import com.focustech.gateway.site.zookeeper.apinode.ApiRuleCheckResult;
+import com.focustech.gateway.site.route.ApiHolder;
+import com.focustech.gateway.site.route.data.ApiRuleCheckResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -12,20 +11,14 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import reactor.core.publisher.Flux;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_HANDLER_MAPPER_ATTR;
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_PREDICATE_ROUTE_ATTR;
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 @Slf4j
-public class CustomRuleGatewayFilterFactory extends AbstractGatewayFilterFactory {
+public class ApiRuleGatewayFilterFactory extends AbstractGatewayFilterFactory {
     private ApiHolder apiHolder;
 
-    public CustomRuleGatewayFilterFactory(ApiHolder apiHolder) {
+    public ApiRuleGatewayFilterFactory(ApiHolder apiHolder) {
         this.apiHolder = apiHolder;
     }
 

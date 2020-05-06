@@ -43,18 +43,20 @@ public class ZookeeperClient {
         treeCache.getListenable().addListener(treeCacheListener);
     }
 
-    public interface CheckAddedConsumer<Processor> {
+    public static interface CheckAddedConsumer<Processor> {
         public void check(Processor processor, String path, byte[] data, int version);
     }
 
-    public interface OnDeletedConsumer<Processor> {
+    public static interface OnDeletedConsumer<Processor> {
         public void onDelete(Processor processor, String deletedNodePath);
     }
 
     public <PROCESSOR> void synchronizeNodeInfo(String path, Set<String> memoryNodes, PROCESSOR processor, CheckAddedConsumer<PROCESSOR> checkAddedConsumer, OnDeletedConsumer<PROCESSOR> onDeletedConsumer) throws Exception {
-        List<String> zkNodes = new LinkedList<>();
-        checkForAddedRecursive(path, zkNodes, processor, checkAddedConsumer);
-        checkForRemoved(memoryNodes, zkNodes, processor, onDeletedConsumer);
+        List<String> fetchedZkNodes = new LinkedList<>();
+        //递归查询zookeeper的节点信息，若节点上有数据，与内存apiMap比较。若内存apiMap中不存在，则进行路由新增操作； 若存在但数据版本号小于zk的版本号时，进行路由更新操作。
+        checkForAddedRecursive(path, fetchedZkNodes, processor, checkAddedConsumer);
+        //内存apiMap中存在，但zookeeper上已不存在的API信息，进行路由删除操作。
+        checkForRemoved(memoryNodes, fetchedZkNodes, processor, onDeletedConsumer);
     }
 
     private <PROCESSOR> void checkForRemoved(Set<String> memoryNodes, List<String> zkNodes, PROCESSOR processor, OnDeletedConsumer<PROCESSOR> onDeletedConsumer) {

@@ -1,7 +1,13 @@
-package com.focustech.gateway.site.zookeeper.apinode;
+package com.focustech.gateway.site.route;
 
+import com.focustech.gateway.site.route.data.ApiNodeData;
+import com.focustech.gateway.site.route.data.ApiNodeInfo;
+import com.focustech.gateway.site.route.data.ApiRule;
+import com.focustech.gateway.site.route.data.ApiRuleCheckResult;
 import com.focustech.gateway.site.zookeeper.core.NodeEvent;
+import com.focustech.gateway.site.zookeeper.core.NodeEventListener;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -21,26 +27,37 @@ import static com.focustech.gateway.site.constant.CommonConstants.RuleScope;
 
 @Slf4j
 @Component
-public class ApiHolder {
-    private Map<String, ApiNodeData> apiMap = new ConcurrentHashMap<>();
+@Order(1)
+public class ApiHolder implements NodeEventListener<ApiNodeData> {
+    private Map<String, ApiNodeInfo<ApiNodeData>> apiMap = new ConcurrentHashMap<>();
 
+    @Override
     public void add(NodeEvent<ApiNodeData> nodeEvent) {
-        apiMap.put(nodeEvent.getPath(), nodeEvent.getData());
+        log.debug("ApiHolder add node event:{}", nodeEvent);
+        apiMap.put(nodeEvent.getPath(), new ApiNodeInfo<>(nodeEvent.getDataVersion(), nodeEvent.getData()));
     }
 
+    @Override
     public void update(NodeEvent<ApiNodeData> nodeEvent) {
-        apiMap.put(nodeEvent.getPath(), nodeEvent.getData());
+        log.debug("ApiHolder update node event:{}", nodeEvent);
+        apiMap.put(nodeEvent.getPath(), new ApiNodeInfo<>(nodeEvent.getDataVersion(), nodeEvent.getData()));
     }
 
+    @Override
     public void delete(NodeEvent<ApiNodeData> nodeEvent) {
+        log.debug("ApiHolder delete node event:{}", nodeEvent);
         apiMap.remove(nodeEvent.getPath());
+    }
+
+    public Map<String, ApiNodeInfo<ApiNodeData>> getApi() {
+        return apiMap;
     }
 
     public ApiRuleCheckResult checkApiRule(String apiPath, ServerHttpRequest request) {
         ApiRuleCheckResult result = new ApiRuleCheckResult(true);
         if (log.isDebugEnabled())
             log.debug("checkApiRule path={},apiData={}", request.getURI().getPath(), apiMap.get(apiPath));
-        List<ApiRule> rules = apiMap.get(apiPath).getRules();
+        List<ApiRule> rules = apiMap.get(apiPath).getData().getRules();
         if (rules != null && rules.size() > 0) {
             for (ApiRule rule : rules) {
                 if (isEqual(RuleScope.COOKIE.name(), rule.getRuleScope())) {

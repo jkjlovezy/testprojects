@@ -1,4 +1,4 @@
-package com.focustech.gateway.site.zookeeper.apinode;
+package com.focustech.gateway.site.route.data;
 
 import com.focustech.gateway.site.zookeeper.core.NodeData;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,6 @@ import java.util.List;
 @ToString
 @Builder
 public class ApiNodeData extends NodeData {
-    private String id;
     private String serviceDomain;
     private String servicePath;
     private Integer requestTimeout;

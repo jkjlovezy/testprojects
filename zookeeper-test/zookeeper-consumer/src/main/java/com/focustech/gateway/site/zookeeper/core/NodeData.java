@@ -1,5 +1,5 @@
 package com.focustech.gateway.site.zookeeper.core;
 
-public class NodeData {
+public abstract class NodeData {
 
 }

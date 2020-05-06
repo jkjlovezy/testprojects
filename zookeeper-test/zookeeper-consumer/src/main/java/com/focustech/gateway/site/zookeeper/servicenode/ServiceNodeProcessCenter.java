@@ -1,6 +1,6 @@
 package com.focustech.gateway.site.zookeeper.servicenode;
 
-import com.focustech.gateway.site.zookeeper.apinode.ApiNodeData;
+import com.focustech.gateway.site.route.data.ApiNodeData;
 import com.focustech.gateway.site.zookeeper.core.NodeEvent;
 import com.focustech.gateway.site.zookeeper.core.ZookeeperClient;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
-public class ServiceNodeProcessor {
+public class ServiceNodeProcessCenter {
     private ConcurrentHashMap<String, NodeEvent<ApiNodeData>> apiNodes = new ConcurrentHashMap<String, NodeEvent<ApiNodeData>>();
-    @Value("${zookeeper.api.path:/gateway/service}")
+    @Value("${zookeeper.service.path:/gateway/service}")
     private String monitorPath;
     @Autowired
     ZookeeperClient zookeeperClient;
