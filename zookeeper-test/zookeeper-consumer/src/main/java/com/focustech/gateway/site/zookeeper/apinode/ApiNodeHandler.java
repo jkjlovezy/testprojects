@@ -52,18 +52,25 @@ public class ApiNodeHandler extends AbstractNodeHandler<ApiNodeData> implements 
     private RouteDefinition assembleRouteDefinition(NodeEvent<ApiNodeData> nodeEvent) {
         final ApiNodeData api = nodeEvent.getData();
         RouteDefinition definition = new RouteDefinition();
-        definition.setId(api.getId());
+        definition.setId(nodeEvent.getPath());
         if ("fuzzy".equalsIgnoreCase(api.getRouteType())) { //路由模糊匹配
-            definition.setPredicates(Arrays.asList(new PredicateDefinition("CustomPath=" + nodeEvent.getPath())));
-            definition.setUri(UriComponentsBuilder.fromUriString(api.getServiceDomain()).build().toUri());
+            definition.setPredicates(Arrays.asList(new PredicateDefinition("Path=" + nodeEvent.getPath())));
+
             List<FilterDefinition> filters = new ArrayList<>();
             filters.add(new FilterDefinition("CustomRule"));
             filters.add(new FilterDefinition("StripPrefix=" + (appearNums(nodeEvent.getPath(), "/") - 1)));
             if (api.getServicePath() != null && api.getServicePath().length() > 0)
                 filters.add(new FilterDefinition("PrefixPath=" + parsePrefixPath(api.getServicePath())));
             definition.setFilters(filters);
+
+            definition.setUri(UriComponentsBuilder.fromUriString(api.getServiceDomain()).build().toUri());
         } else {//路由精确匹配
-            definition.setPredicates(Arrays.asList(new PredicateDefinition("Path=" + nodeEvent.getPath())));
+            definition.setPredicates(Arrays.asList(new PredicateDefinition("Path=" + nodeEvent.getPath())));;
+
+            List<FilterDefinition> filters = new ArrayList<>();
+            filters.add(new FilterDefinition("CustomRule"));
+            definition.setFilters(filters);
+
             definition.setUri(UriComponentsBuilder.fromUriString(api.getServiceDomain() + api.getServicePath()).build().toUri());
         }
 

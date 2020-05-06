@@ -40,7 +40,12 @@ public class BaseTreeCacheListener<Handler extends NodeHandler, Data extends Nod
             byte[] data = childData.getData();
             String path = childData.getPath();
             int dataVersion = childData.getStat().getVersion();
-            log.debug("treeCacheListener receive node event: type={},path={},dataVersion={},data={}", treeCacheEvent.getType(), path, dataVersion, new String(data, Charset.forName("UTF-8")));
+            if (data == null) {
+                log.debug("treeCacheListener receive node event: type={},path={},dataVersion={},data={}", treeCacheEvent.getType(), path, dataVersion, null);
+                return;
+            } else {
+                log.debug("treeCacheListener receive node event: type={},path={},dataVersion={},data={}", treeCacheEvent.getType(), path, dataVersion, new String(data, Charset.forName("UTF-8")));
+            }
             switch (treeCacheEvent.getType()) {
                 case NODE_ADDED:
                     if (data != null && data.length > 0) {

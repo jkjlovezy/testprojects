@@ -49,12 +49,12 @@ public class ApiHolder {
                         result.getFailRules().add(rule);
                     }
                 } else if (isEqual(RuleScope.REQUEST_PARAM.name(), rule.getRuleScope())) {
-                    if (checkApiRule(rule, request.getQueryParams(), rule.getParamKey(), String::toString)) {
+                    if (!checkApiRule(rule, request.getQueryParams(), rule.getParamKey(), String::toString)) {
                         result.setSuccess(false);
                         result.getFailRules().add(rule);
                     }
                 } else if (isEqual(RuleScope.HEADER.name(), rule.getRuleScope())) {
-                    if (checkApiRule(rule, request.getHeaders(), rule.getParamKey(), String::toString)) {
+                    if (!checkApiRule(rule, request.getHeaders(), rule.getParamKey(), String::toString)) {
                         result.setSuccess(false);
                         result.getFailRules().add(rule);
                     }

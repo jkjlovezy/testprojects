@@ -14,4 +14,15 @@ public class ApiRule {
     private String paramKey;
     //参数值
     private String paramValue;
+
+    public ApiRule(){
+
+    }
+
+    public ApiRule(String ruleScope, String matchType, String paramKey, String paramValue) {
+        this.ruleScope = ruleScope;
+        this.matchType = matchType;
+        this.paramKey = paramKey;
+        this.paramValue = paramValue;
+    }
 }

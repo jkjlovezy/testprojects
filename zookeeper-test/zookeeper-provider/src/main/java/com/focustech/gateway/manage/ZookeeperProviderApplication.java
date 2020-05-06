@@ -7,6 +7,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @SpringBootApplication
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 public class ZookeeperProviderApplication {
+
     public static void main(String[] args) {
         new SpringApplication(ZookeeperProviderApplication.class).run(args);
     }
