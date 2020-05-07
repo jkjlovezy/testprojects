@@ -1,21 +1,6 @@
 package com.focustech.gateway.site.route.filter.ratelimit;
 
-import com.focustech.gateway.site.route.data.ApiRateLimit;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
-import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class FluxTest {
     public static void main(String[] args) {
@@ -51,12 +36,13 @@ public class FluxTest {
 //        Flux.fromIterable(Arrays.asList("s1","s2","s3")).flatMap(s->convert(s)).takeWhile(s->s.allowed).subscribe(System.out::println);
 
 //        System.out.println(Flux.fromIterable(Arrays.asList("s1","s2","s3")).blockLast());
+//        Flux.fromIterable(Arrays.asList("s1","s2","s3")).flatMap(s->convert(s)).reduceWith(()->true,(x,y)-> x && y.allowed).subscribe(System.out::println);
     }
 
     private static Mono<Response1> convert(String s){
         System.out.println("convert:"+s);
         try {
-            Thread.sleep(1000L);
+            Thread.sleep(5000L);
         }catch (Exception e){
             e.printStackTrace();
         }

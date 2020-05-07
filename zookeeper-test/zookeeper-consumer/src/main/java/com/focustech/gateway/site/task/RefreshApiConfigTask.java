@@ -6,13 +6,12 @@ import com.focustech.gateway.site.zookeeper.core.ZookeeperClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component
+//@Component
 public class RefreshApiConfigTask {
     @Autowired
     ZookeeperClient zookeeperClient;

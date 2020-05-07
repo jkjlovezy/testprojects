@@ -17,7 +17,7 @@ public class BuildApiDataTest {
         data.getRules().add(new ApiRule("HEADER","EQUAL","APP_KEY","11111"));
         data.getRules().add(new ApiRule("REQUEST_PARAM","EQUAL","APP_NAME","apptest"));
         data.setRateLimits(new ArrayList<ApiRateLimit>());
-        data.getRateLimits().add(new ApiRateLimit(1,"HOUR","API") );
+        data.getRateLimits().add(new ApiRateLimit(1,5,"HOUR","API") );
         System.out.println(JSON.toJSONString(data));
     }
 }

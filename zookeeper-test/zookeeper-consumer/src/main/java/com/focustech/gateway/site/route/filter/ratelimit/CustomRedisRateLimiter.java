@@ -72,7 +72,7 @@ public class CustomRedisRateLimiter extends AbstractRateLimiter<CustomRedisRateL
     private String burstCapacityHeader = BURST_CAPACITY_HEADER;
 
     public CustomRedisRateLimiter(ReactiveRedisTemplate<String, String> redisTemplate,
-                                  RedisScript<List<Long>> script, Validator validator,ApiHolder apiHolder) {
+                                  RedisScript<List<Long>> script, Validator validator, ApiHolder apiHolder) {
         super(Config.class, CONFIGURATION_PROPERTY_NAME, validator);
         this.redisTemplate = redisTemplate;
         this.script = script;
@@ -163,10 +163,15 @@ public class CustomRedisRateLimiter extends AbstractRateLimiter<CustomRedisRateL
 //                        allowed.set(false);
 //                    }
 //                });
-        for(ApiRateLimit limit: rateLimits){
-            Mono<Response> response =  isAllowed(route.getId(), getKeyId(routeId, limit, exchange), limit.getQpsLimit() + "", getEpochTime(limit.getQpsStep()));
-            if(!response.blockOptional().get().isAllowed()){
-                allowed.set(false);
+        for (ApiRateLimit limit : rateLimits) {
+            Mono<Response> response = isAllowed(getKeyId(routeId, limit, exchange), limit.getReplenishRate(), limit.getBurstCapacity(), getEpochTime(limit.getTimeUnit()));
+            response.subscribe(r -> {
+                if (!r.isAllowed()) {
+                    allowed.set(false);
+                }
+            });
+            //不启作用，上面设置false是异步操作。
+            if (!allowed.get()) {
                 break;
             }
         }
@@ -174,13 +179,12 @@ public class CustomRedisRateLimiter extends AbstractRateLimiter<CustomRedisRateL
     }
 
 
-
-
-    public Mono<Response> isAllowed(String routeId, String id, String replenishRate, long epochTime) {
+    public Mono<Response> isAllowed(String id, int replenishRate, int burstCapacity, long epochTime) {
         try {
+            log.debug("----enter isAllowed");
             List<String> keys = getKeys(id);
             // The arguments to the LUA script. time() returns unixtime in seconds.
-            List<String> scriptArgs = Arrays.asList(replenishRate + "", "100",
+            List<String> scriptArgs = Arrays.asList(replenishRate + "", burstCapacity + "",
                     epochTime + "", "1");
             // allowed, tokens_left = redis.eval(SCRIPT, keys, args)
             Flux<List<Long>> flux = this.redisTemplate.execute(this.script, keys, scriptArgs);
@@ -196,6 +200,7 @@ public class CustomRedisRateLimiter extends AbstractRateLimiter<CustomRedisRateL
                         RateLimiter.Response response = new RateLimiter.Response(allowed, new HashMap<String, String>());
 
                         if (log.isDebugEnabled()) {
+                            log.debug("tokensLeft: " + tokensLeft);
                             log.debug("response: " + response);
                         }
                         return response;
