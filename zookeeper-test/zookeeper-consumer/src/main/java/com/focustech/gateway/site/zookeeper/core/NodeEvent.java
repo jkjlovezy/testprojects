@@ -7,7 +7,7 @@ import lombok.ToString;
 @ToString
 public class NodeEvent<T extends NodeData> {
     private NodeOperationType operation;
-    private String path;
+    private String path; //包含根路径
     private int dataVersion;
     private T data;
 

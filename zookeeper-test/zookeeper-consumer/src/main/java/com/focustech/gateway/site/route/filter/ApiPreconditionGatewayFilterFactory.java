@@ -15,10 +15,10 @@ import java.nio.charset.Charset;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 @Slf4j
-public class ApiRuleGatewayFilterFactory extends AbstractGatewayFilterFactory {
+public class ApiPreconditionGatewayFilterFactory extends AbstractGatewayFilterFactory {
     private ApiHolder apiHolder;
 
-    public ApiRuleGatewayFilterFactory(ApiHolder apiHolder) {
+    public ApiPreconditionGatewayFilterFactory(ApiHolder apiHolder) {
         this.apiHolder = apiHolder;
     }
 

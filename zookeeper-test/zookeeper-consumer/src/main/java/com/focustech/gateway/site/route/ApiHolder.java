@@ -7,6 +7,7 @@ import com.focustech.gateway.site.route.data.ApiRuleCheckResult;
 import com.focustech.gateway.site.zookeeper.core.NodeEvent;
 import com.focustech.gateway.site.zookeeper.core.NodeEventListener;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
@@ -29,24 +30,27 @@ import static com.focustech.gateway.site.constant.CommonConstants.RuleScope;
 @Component
 @Order(1)
 public class ApiHolder implements NodeEventListener<ApiNodeData> {
-    private Map<String, ApiNodeInfo<ApiNodeData>> apiMap = new ConcurrentHashMap<>();
+    @Value("${zookeeper.api.path:/gateway/api}")
+    private String apiRootPath;
+
+    private Map<String, ApiNodeInfo<ApiNodeData>> apiMap = new ConcurrentHashMap<>(); // 泛型<apiPath, ApiNodeInfo>,apiPath不包含根路径。
 
     @Override
     public void add(NodeEvent<ApiNodeData> nodeEvent) {
         log.debug("ApiHolder add node event:{}", nodeEvent);
-        apiMap.put(nodeEvent.getPath(), new ApiNodeInfo<>(nodeEvent.getDataVersion(), nodeEvent.getData()));
+        apiMap.put(nodeEvent.getPath().substring(apiRootPath.length()), new ApiNodeInfo<>(nodeEvent.getDataVersion(), nodeEvent.getData()));
     }
 
     @Override
     public void update(NodeEvent<ApiNodeData> nodeEvent) {
         log.debug("ApiHolder update node event:{}", nodeEvent);
-        apiMap.put(nodeEvent.getPath(), new ApiNodeInfo<>(nodeEvent.getDataVersion(), nodeEvent.getData()));
+        apiMap.put(nodeEvent.getPath().substring(apiRootPath.length()), new ApiNodeInfo<>(nodeEvent.getDataVersion(), nodeEvent.getData()));
     }
 
     @Override
     public void delete(NodeEvent<ApiNodeData> nodeEvent) {
         log.debug("ApiHolder delete node event:{}", nodeEvent);
-        apiMap.remove(nodeEvent.getPath());
+        apiMap.remove(nodeEvent.getPath().substring(apiRootPath.length()));
     }
 
     public Map<String, ApiNodeInfo<ApiNodeData>> getApi() {
@@ -56,7 +60,7 @@ public class ApiHolder implements NodeEventListener<ApiNodeData> {
     public ApiRuleCheckResult checkApiRule(String apiPath, ServerHttpRequest request) {
         ApiRuleCheckResult result = new ApiRuleCheckResult(true);
         if (log.isDebugEnabled())
-            log.debug("checkApiRule path={},apiData={}", request.getURI().getPath(), apiMap.get(apiPath));
+            log.debug("checkApiRule requestPath={},apiData={}", request.getURI().getPath(), apiMap.get(apiPath));
         List<ApiRule> rules = apiMap.get(apiPath).getData().getRules();
         if (rules != null && rules.size() > 0) {
             for (ApiRule rule : rules) {
@@ -164,34 +168,35 @@ public class ApiHolder implements NodeEventListener<ApiNodeData> {
 
 
     public static void main(String[] args) {
-        ApiHolder holder = new ApiHolder();
-        ApiRule rule;
 
-        MultiValueMap<String, HttpCookie> cookies = new LinkedMultiValueMap<>();
-        cookies.add("cookie1", new HttpCookie("cookie1", "jkj"));
-        rule = new ApiRule();
-        rule.setRuleScope("COOKIE");
-        rule.setMatchType("EQUAL");
-        rule.setParamKey("cookie1");
-        rule.setParamValue("jkj");
-        System.out.println(holder.checkApiRule(rule, cookies, rule.getParamKey(), HttpCookie::getValue));
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("paramName", "jkj");
-        rule.setRuleScope("REQUEST_PARAM");
-        rule.setMatchType("EQUAL");
-        rule.setParamKey("paramName");
-        rule.setParamValue("jkj");
-        System.out.println(holder.checkApiRule(rule, params, rule.getParamKey(), String::toString));
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("appKey", "111112");
-        rule = new ApiRule();
-        rule.setRuleScope("HEADER");
-        rule.setMatchType("EQUAL");
-        rule.setParamKey("appKey");
-        rule.setParamValue("111111");
-        System.out.println(holder.checkApiRule(rule, headers, rule.getParamKey(), String::toString));
+//        ApiHolder holder = new ApiHolder();
+//        ApiRule rule;
+//
+//        MultiValueMap<String, HttpCookie> cookies = new LinkedMultiValueMap<>();
+//        cookies.add("cookie1", new HttpCookie("cookie1", "jkj"));
+//        rule = new ApiRule();
+//        rule.setRuleScope("COOKIE");
+//        rule.setMatchType("EQUAL");
+//        rule.setParamKey("cookie1");
+//        rule.setParamValue("jkj");
+//        System.out.println(holder.checkApiRule(rule, cookies, rule.getParamKey(), HttpCookie::getValue));
+//
+//        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//        params.add("paramName", "jkj");
+//        rule.setRuleScope("REQUEST_PARAM");
+//        rule.setMatchType("EQUAL");
+//        rule.setParamKey("paramName");
+//        rule.setParamValue("jkj");
+//        System.out.println(holder.checkApiRule(rule, params, rule.getParamKey(), String::toString));
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("appKey", "111112");
+//        rule = new ApiRule();
+//        rule.setRuleScope("HEADER");
+//        rule.setMatchType("EQUAL");
+//        rule.setParamKey("appKey");
+//        rule.setParamValue("111111");
+//        System.out.println(holder.checkApiRule(rule, headers, rule.getParamKey(), String::toString));
 
 
     }

@@ -8,4 +8,8 @@ public class CommonConstants {
     public static  enum RuleScope {
         HEADER, REQUEST_PARAM, COOKIE
     }
+
+    public static  enum RouteType {
+        FUZZY, STRICT
+    }
 }

@@ -1,6 +1,6 @@
 package com.focustech.gateway.site.config;
 
-import com.focustech.gateway.site.route.filter.ApiRuleGatewayFilterFactory;
+import com.focustech.gateway.site.route.filter.ApiPreconditionGatewayFilterFactory;
 import com.focustech.gateway.site.route.ApiNodeChangeHandler;
 import com.focustech.gateway.site.route.ApiNodeChangeListener;
 import com.focustech.gateway.site.route.ApiHolder;
@@ -8,6 +8,7 @@ import com.focustech.gateway.site.zookeeper.core.NodeChangeListener;
 import com.focustech.gateway.site.zookeeper.core.ZookeeperClient;
 import com.focustech.gateway.site.zookeeper.servicenode.ServiceNodeData;
 import com.focustech.gateway.site.zookeeper.servicenode.ServiceNodeChangeHandler;
+import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,14 +31,14 @@ public class ZookeeperConfiguration {
     }
 
     @Bean("apiNodeListener")
-    public NodeChangeListener apiNodeListener(ApiNodeChangeHandler apiNodeHandler) {
-        ApiNodeChangeListener apiNodeListener = new ApiNodeChangeListener(apiNodeHandler, apiRootPath);
+    public TreeCacheListener apiNodeListener(ApiNodeChangeHandler apiNodeHandler) {
+        TreeCacheListener apiNodeListener = new ApiNodeChangeListener(apiNodeHandler, apiRootPath);
         return apiNodeListener;
     }
 
     @Bean("serviceNodeListener")
-    public NodeChangeListener serviceNodeListener(ServiceNodeChangeHandler serviceNodeHandler) {
-        NodeChangeListener serviceNodeListener = new NodeChangeListener(serviceNodeHandler, serviceRootPath) {
+    public TreeCacheListener serviceNodeListener(ServiceNodeChangeHandler serviceNodeHandler) {
+        TreeCacheListener serviceNodeListener = new NodeChangeListener(serviceNodeHandler, serviceRootPath) {
             @Override
             protected Class getNodeDataClass() {
                 return ServiceNodeData.class;
@@ -47,8 +48,8 @@ public class ZookeeperConfiguration {
     }
 
     @Bean
-    public ApiRuleGatewayFilterFactory customRuleGatewayFilterFactory(ApiHolder apiRuleCheckProcessor) {
-        return new ApiRuleGatewayFilterFactory(apiRuleCheckProcessor);
+    public ApiPreconditionGatewayFilterFactory customRuleGatewayFilterFactory(ApiHolder apiRuleCheckProcessor) {
+        return new ApiPreconditionGatewayFilterFactory(apiRuleCheckProcessor);
     }
 
 

@@ -51,26 +51,26 @@ public class ZookeeperClient {
         public void onDelete(Processor processor, String deletedNodePath);
     }
 
-    public <PROCESSOR> void synchronizeNodeInfo(String path, Set<String> memoryNodes, PROCESSOR processor, CheckAddedConsumer<PROCESSOR> checkAddedConsumer, OnDeletedConsumer<PROCESSOR> onDeletedConsumer) throws Exception {
-        List<String> fetchedZkNodes = new LinkedList<>();
+    public <PROCESSOR> void synchronizeNodeInfo(String apiRootPath, Set<String> apiPaths, PROCESSOR processor, CheckAddedConsumer<PROCESSOR> checkAddedConsumer, OnDeletedConsumer<PROCESSOR> onDeletedConsumer) throws Exception {
+        List<String> fetchedNodePaths = new LinkedList<>();
         //递归查询zookeeper的节点信息，若节点上有数据，与内存apiMap比较。若内存apiMap中不存在，则进行路由新增操作； 若存在但数据版本号小于zk的版本号时，进行路由更新操作。
-        checkForAddedRecursive(path, fetchedZkNodes, processor, checkAddedConsumer);
+        checkForAddedRecursive(apiRootPath, fetchedNodePaths, processor, checkAddedConsumer);
         //内存apiMap中存在，但zookeeper上已不存在的API信息，进行路由删除操作。
-        checkForRemoved(memoryNodes, fetchedZkNodes, processor, onDeletedConsumer);
+        checkForRemoved(apiRootPath, apiPaths, fetchedNodePaths, processor, onDeletedConsumer);
     }
 
-    private <PROCESSOR> void checkForRemoved(Set<String> memoryNodes, List<String> zkNodes, PROCESSOR processor, OnDeletedConsumer<PROCESSOR> onDeletedConsumer) {
-        if (memoryNodes == null || memoryNodes.isEmpty()) {
+    private <PROCESSOR> void checkForRemoved(String apiRootPath, Set<String> apiPaths, List<String> nodePaths, PROCESSOR processor, OnDeletedConsumer<PROCESSOR> onDeletedConsumer) {
+        if (apiPaths == null || apiPaths.isEmpty()) {
             return;
         }
-        for (String nodePath : memoryNodes) {
-            if (!zkNodes.contains(nodePath)) {
-                onDeletedConsumer.onDelete(processor, nodePath);
+        for (String apiPath : apiPaths) {
+            if (!nodePaths.contains(apiRootPath + apiPath)) {
+                onDeletedConsumer.onDelete(processor, apiPath);
             }
         }
     }
 
-    private <PROCESSOR> void checkForAddedRecursive(String path, List<String> allNodePathList, PROCESSOR processor, CheckAddedConsumer<PROCESSOR> checkAddedConsumer) throws Exception {
+    private <PROCESSOR> void checkForAddedRecursive(String path, List<String> fetchedNodePaths, PROCESSOR processor, CheckAddedConsumer<PROCESSOR> checkAddedConsumer) throws Exception {
         List<String> children = curator.getChildren().forPath(path);
         if (CollectionUtils.isEmpty(children)) {
             return;
@@ -78,7 +78,7 @@ public class ZookeeperClient {
         Stat stat;
         for (String childName : children) {
             String childPath = path + "/" + childName;
-            allNodePathList.add(childPath);
+            fetchedNodePaths.add(childPath);
             byte[] bytes = curator.getData().storingStatIn(stat = new Stat()).forPath(childPath);
             //节点上有数据：维护API配置信息。
             if (stat.getDataLength() != 0) {
@@ -88,7 +88,7 @@ public class ZookeeperClient {
             if (stat.getNumChildren() == 0) {
                 continue;
             }
-            checkForAddedRecursive(childPath, allNodePathList, processor, checkAddedConsumer);
+            checkForAddedRecursive(childPath, fetchedNodePaths, processor, checkAddedConsumer);
         }
 
     }

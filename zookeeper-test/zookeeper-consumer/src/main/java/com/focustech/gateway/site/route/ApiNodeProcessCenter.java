@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 public class ApiNodeProcessCenter {
 //    private ConcurrentHashMap<String, NodeInfo<ApiNodeData>> apiNodes = new ConcurrentHashMap<String, NodeInfo<ApiNodeData>>();
     @Value("${zookeeper.api.path:/gateway/api}")
-    private String monitorPath;
+    private String apiRootPath;
     @Autowired
     ApiNodeChangeHandler apiNodeHandler;
     @Autowired
@@ -35,44 +35,44 @@ public class ApiNodeProcessCenter {
     @PostConstruct
     public void registerListener() {
         try {
-            zookeeperClient.registerListener(monitorPath, apiNodeListener);
+            zookeeperClient.registerListener(apiRootPath, apiNodeListener);
         } catch (Exception e) {
             log.error("register the apiNodeListener error: ", e);
         }
     }
 
     public void synchronizeNodeInfo() throws Exception {
-        zookeeperClient.synchronizeNodeInfo(monitorPath, apiHolder.getApi().keySet(), this, ApiNodeProcessCenter::checkForAdded, ApiNodeProcessCenter::onDeleted);
+        zookeeperClient.synchronizeNodeInfo(apiRootPath, apiHolder.getApi().keySet(), this, ApiNodeProcessCenter::checkForAdded, ApiNodeProcessCenter::onDeleted);
 
     }
 
     public void checkForAdded(String nodePath, byte[] data, int dataVersion) {
         try {
             ApiNodeInfo<ApiNodeData> currentNode = new ApiNodeInfo<>(dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), ApiNodeData.class));
-            ApiNodeInfo<ApiNodeData> oldNode = apiHolder.getApi().putIfAbsent(nodePath.substring(monitorPath.length()), currentNode);
+            ApiNodeInfo<ApiNodeData> oldNode = apiHolder.getApi().putIfAbsent(nodePath.substring(apiRootPath.length()), currentNode);
             if (oldNode != null) {
                 if (oldNode.getDataVersion() < currentNode.getDataVersion()) {
                     if (log.isDebugEnabled())
-                        log.debug("【checkForAdded】api node updated,path={},nodeInfo={}", nodePath, currentNode);
-                    NodeEvent<ApiNodeData> updateEvent = new NodeEvent<>(NodeOperationType.UPDATED, nodePath.substring(monitorPath.length()), dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), ApiNodeData.class));
+                        log.debug("【checkForAdded】api node updated,nodePath={},nodeInfo={}", nodePath, currentNode);
+                    NodeEvent<ApiNodeData> updateEvent = new NodeEvent(NodeOperationType.UPDATED, nodePath.substring(apiRootPath.length()), dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), ApiNodeData.class));
                     apiNodeHandler.handle(updateEvent);
                 }
             } else {
                 if (log.isDebugEnabled())
-                    log.debug("【checkForAdded】api node added,path={},nodeInfo={}", nodePath, currentNode);
-                NodeEvent<ApiNodeData> addEvent = new NodeEvent<>(NodeOperationType.ADDED, nodePath.substring(monitorPath.length()), dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), ApiNodeData.class));
+                    log.debug("【checkForAdded】api node added,nodePath={},nodeInfo={}", nodePath, currentNode);
+                NodeEvent<ApiNodeData> addEvent = new NodeEvent(NodeOperationType.ADDED, nodePath.substring(apiRootPath.length()), dataVersion, JSON.parseObject(new String(data, Charset.forName("UTF-8")), ApiNodeData.class));
                 apiNodeHandler.handle(addEvent);
 
             }
         } catch (Exception e) {
-            log.error("【checkForAdded】api node updated,path={},data={}", nodePath.substring(monitorPath.length()), new String(data, Charset.forName("UTF-8")));
+            log.error("【checkForAdded】api node updated,nodePath={},data={}", nodePath.substring(apiRootPath.length()), new String(data, Charset.forName("UTF-8")));
         }
     }
 
     public void onDeleted(String deletedNodePath) {
         if (log.isDebugEnabled())
-            log.debug("【checkForAdded】api node added,path={}", deletedNodePath);
-        NodeEvent<ApiNodeData> deleteEvent = new NodeEvent<>(NodeOperationType.DELETED, deletedNodePath.substring(monitorPath.length()), 0, null);
+            log.debug("【onDeleted】api node deleted,path={}", deletedNodePath);
+        NodeEvent<ApiNodeData> deleteEvent = new NodeEvent<>(NodeOperationType.DELETED, deletedNodePath.substring(apiRootPath.length()), 0, null);
         apiNodeHandler.handle(deleteEvent);
 
     }

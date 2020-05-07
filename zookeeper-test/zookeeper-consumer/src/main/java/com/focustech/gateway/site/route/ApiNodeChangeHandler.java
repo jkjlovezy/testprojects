@@ -14,19 +14,15 @@ import java.util.List;
 @Slf4j
 @Component
 public class ApiNodeChangeHandler extends AbstractNodeHandler<ApiNodeData> implements NodeHandler {
-    @Autowired
-    private DynamicRouteService dynamicRouteService;
-    @Autowired
-    private ApiHolder apiHolder;
 
     @Autowired
     private List<NodeEventListener<ApiNodeData>> nodeEventListeners;
 
     @Override
     public void doHandle(NodeEvent<ApiNodeData> nodeEvent) {
-        log.debug("ApiNodeHandler receive nodeEvent,nodeEvent={}", nodeEvent);
+        log.debug("ApiNodeChangeHandler receive nodeEvent,nodeEvent={}", nodeEvent);
         if (nodeEvent.getData() == null) {
-            log.warn("ApiNodeHandler receive nodeEvent but no data; nodeEvent={}", nodeEvent);
+            log.warn("ApiNodeChangeHandler receive nodeEvent but no data,return! nodeEvent={}", nodeEvent);
             return;
         }
         switch (nodeEvent.getOperation()) {
