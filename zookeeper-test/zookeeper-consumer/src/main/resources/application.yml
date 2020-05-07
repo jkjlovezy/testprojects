@@ -22,6 +22,7 @@ spring:
   cloud:
     gateway:
       routes:
+
 #      - id: service1_v1
 #        uri: http://localhost:8000
 #        predicates:
@@ -35,6 +36,9 @@ spring:
 #        filters:
 #        - StripPrefix=1
 #        - PrefixPath=/test
+  redis:
+    port: 19000
+    host: 192.168.52.46
 zookeeper:
   url: 127.0.0.1:2181
   rootpath: /gateway/api

@@ -24,5 +24,6 @@ public class ApiNodeData extends NodeData {
     //路由类型：fuzzy-模糊匹配，strict-精确匹配
     private String routeType;
     private List<ApiRule> rules;
+    private List<ApiRateLimit> rateLimits;
 
 }
