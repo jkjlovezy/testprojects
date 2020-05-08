@@ -5,13 +5,13 @@ import com.focustech.gateway.site.route.ApiNodeProcessCenter;
 import com.focustech.gateway.site.zookeeper.core.ZookeeperClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import java.time.LocalDateTime;
 
 @Slf4j
-//@Component
+@Component
 public class RefreshApiConfigTask {
     @Autowired
     ZookeeperClient zookeeperClient;
@@ -20,8 +20,10 @@ public class RefreshApiConfigTask {
     ApiNodeProcessCenter apiNodeProcessCenter;
     @Autowired
     ApiHolder apiHolder;
+    @Autowired
+    TestLuaService testLuaService;
 
-    @Scheduled(cron = "0/15 * * * * ?")
+//    @Scheduled(cron = "0/15 * * * * ?")
     public void synchronizeApiNodeInfo() {
         long startTime = System.currentTimeMillis();
         log.info("---synchronize Api node info start.currentTime={}", LocalDateTime.now());
@@ -33,5 +35,11 @@ public class RefreshApiConfigTask {
         } catch (Exception e) {
             log.info("---synchronize Api node info error.currentTime={}, consumingTime={}ms, exception:", LocalDateTime.now(), System.currentTimeMillis() - startTime, e);
         }
+    }
+
+//    @Scheduled(cron = "0/15 * * * * ?")
+    public void testLua() {
+        log.info("---task begin testLua");
+        testLuaService.callLua();
     }
 }

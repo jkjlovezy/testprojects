@@ -15,6 +15,7 @@
         <module>zookeeper-provider</module>
         <module>zookeeper-consumer</module>
         <module>zookeeper-cosumer2</module>
+        <module>lua-test</module>
     </modules>
     <dependencies>
         <dependency>

@@ -1,6 +1,9 @@
-package com.focustech.gateway.site.route.filter.ratelimit;
+package com.focustech.gateway.site;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
 
 public class FluxTest {
     public static void main(String[] args) {
@@ -29,8 +32,8 @@ public class FluxTest {
 //        Mono<Response1> response = Flux.fromIterable(Arrays.asList("s1","s2","s3")).map(s->convert(s)).takeUntil(s->!s.block().allowed).blockFirst();
 //        System.out.println("last: "+response.block().allowed + ":" + response.block().source);
 
-//        Mono<Response1> response = Flux.fromIterable(Arrays.asList("s1","s2","s3")).map(s->convert(s)).takeUntil(s->!s.block().allowed).blockLast();
-//        System.out.println("last: "+response.block().allowed + ":" + response.block().source);
+        Mono<Response1> response = Flux.fromIterable(Arrays.asList("s1","s2","s3")).map(s->convert(s)).takeUntil(s->!s.block().allowed).blockLast();
+        System.out.println("last: "+response.block().allowed + ":" + response.block().source);
 
 
 //        Flux.fromIterable(Arrays.asList("s1","s2","s3")).flatMap(s->convert(s)).takeWhile(s->s.allowed).subscribe(System.out::println);
@@ -42,7 +45,7 @@ public class FluxTest {
     private static Mono<Response1> convert(String s){
         System.out.println("convert:"+s);
         try {
-            Thread.sleep(5000L);
+            Thread.sleep(1000L);
         }catch (Exception e){
             e.printStackTrace();
         }
