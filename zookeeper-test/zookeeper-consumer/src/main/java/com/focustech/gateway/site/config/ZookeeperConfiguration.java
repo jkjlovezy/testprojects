@@ -69,7 +69,7 @@ public class ZookeeperConfiguration {
 
     @Bean
     @Qualifier(CustomRedisRateLimiter.CUSTOM_REDIS_SCRIPT_NAME)
-    public DefaultRedisScript customRedisRateLimiterScript() {
+    public RedisScript customRedisRateLimiterScript() {
         DefaultRedisScript redisScript = new DefaultRedisScript<List<Long>>();
         redisScript.setResultType(List.class);
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource(customRedisRateLimterScriptPath)));
